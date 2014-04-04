@@ -141,6 +141,9 @@ void rotate( T& a, T& b )
 
 // ------------------------------------------------------------------------
 
+/**
+ * Compute the permutation of WH coefficients to sort them by sequency.
+ */
 template <typename IntType>
 void fwht_sequency_permutation( std::vector<IntType>& perm, unsigned order )
 {
@@ -153,7 +156,7 @@ void fwht_sequency_permutation( std::vector<IntType>& perm, unsigned order )
 // ------------------------------------------------------------------------
 
 /**
- * Fast Walsh-Hadamard transforms
+ * Fast Walsh-Hadamard transform.
  */
 template <typename T>
 void fwht( std::vector<T>& data, bool sequency_ordered = false )
