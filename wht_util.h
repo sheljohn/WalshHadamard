@@ -128,7 +128,7 @@ unsigned ilog2( IntType n )
 // ------------------------------------------------------------------------
 
 /**
- * Rotate qbit
+ * Orthogonal transformation.
  */
 template <typename T>
 void rotate( T& a, T& b )
