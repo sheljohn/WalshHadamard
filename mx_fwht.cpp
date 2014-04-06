@@ -1,5 +1,5 @@
 //================================================
-// @title        mx_wht.cpp
+// @title        mx_fwht.cpp
 // @author       Jonathan Hadida
 // @contact      Jonathan.hadida [at] dtc.ox.ac.uk
 //================================================
@@ -20,14 +20,14 @@
 /**
  * Dependency to MexArray (see https://github.com/Sheljohn/MexArray).
  * Use the script start_matlab.sh to start Matlab, and compile with:
- * mex CXXFLAGS="\$CXXFLAGS -std=c++0x -Wall -O2" mx_wht.cpp
+ * mex CXXFLAGS="\$CXXFLAGS -std=c++0x -Wall -O2" mx_fwht.cpp
  */
 void mexFunction(	int nargout, mxArray *out[],
 					int nargin, const mxArray *in[] )
 {
 	if ( nargin != 1 )
 	{
-		mexErrMsgTxt("Usage: w = mx_wht(sequence);");
+		mexErrMsgTxt("Usage: w = mx_fwht(sequence);");
 		return;
 	}
 
