@@ -1,5 +1,5 @@
 //================================================
-// @title        mx_wht.cpp
+// @title        mx_sequency_perm.cpp
 // @author       Jonathan Hadida
 // @contact      Jonathan.hadida [at] dtc.ox.ac.uk
 //================================================
@@ -7,8 +7,6 @@
 #include "fwht.h"
 #include "mexArray.h"
 #include <algorithm>
-
-#define SEQUENCY_ORDER false
 
 
 
@@ -18,30 +16,30 @@
 
 
 /**
- * Dependency to MexArray (see https://github.com/Sheljohn/MexArray).
+ * Returns the sequency permutation (bitrev of Gray code) of order n.
  * Use the script start_matlab.sh to start Matlab, and compile with:
- * mex CXXFLAGS="\$CXXFLAGS -std=c++0x -Wall -O2" mx_wht.cpp
+ * mex CXXFLAGS="\$CXXFLAGS -std=c++0x -Wall -O2" mx_sequency_perm.cpp
  */
 void mexFunction(	int nargout, mxArray *out[],
 					int nargin, const mxArray *in[] )
 {
 	if ( nargin != 1 )
-	{
-		mexErrMsgTxt("Usage: w = mx_wht(sequence);");
+	{		
+		mexErrMsgTxt("Usage: p = mx_sequency_perm(order);");
 		return;
 	}
 
-	ndArray<const double,2> input(in[0]);
-	ndArray<double,2> output;
+	ndArray<unsigned,2> output;
 
-	std::vector<double> d( input.begin(), input.end() );
-	fwht( d, SEQUENCY_ORDER );
+	unsigned n = static_cast<unsigned>(mxGetScalar(in[0]));
+	std::vector<unsigned> p;
+	fwht_sequency_permutation( p, n );
 
 	int size[2];
 		size[0] = 1;
-		size[1] = d.size();
-	out[0] = mxCreateNumericArray( 2, size, mx_type<double>::id, mxREAL );
+		size[1] = p.size();
+	out[0] = mxCreateNumericArray( 2, size, mx_type<unsigned>::id, mxREAL );
 	output.assign( out[0] );
 
-	std::copy( d.begin(), d.end(), output.begin() );
+	std::copy( p.begin(), p.end(), output.begin() );
 }

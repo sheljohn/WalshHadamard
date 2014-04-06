@@ -1,8 +1,8 @@
-#ifndef __WHT_UTIL__
-#define __WHT_UTIL__
+#ifndef __FWHT__
+#define __FWHT__
 
 //================================================
-// @title        wht_util.h
+// @title        fwht.h
 // @author       Jonathan Hadida
 // @contact      Jonathan.hadida [at] dtc.ox.ac.uk
 //================================================
@@ -11,6 +11,9 @@
 #include <vector>
 #include <cstdio>
 #include <iostream>
+#include <stdexcept>
+
+#define for_i(n) for ( unsigned i=0; i<n; ++i )
 
 
 
@@ -60,21 +63,9 @@ IntType bit_reverse( IntType n, unsigned nbits )
 }
 
 template <typename IntType>
-IntType bit_reverse( IntType n )
+inline IntType bit_reverse( IntType n )
 {
-	IntType r = n;
-	IntType l = 8*sizeof(n)-1;
-
-	// Permute
-	while ( n >>= 1 )
-	{
-		r <<= 1;
-		r |= n & 1;
-		--l;
-	}
-
-	// Final shift
-	return r <<= l;
+	return bit_reverse( n, 8*sizeof(n) );
 }
 
 // ------------------------------------------------------------------------
@@ -100,7 +91,7 @@ void bit_print( IntType n )
  * Gray codes transforms.
  */
 template <typename IntType>
-IntType bin2gray( IntType n )
+inline IntType bin2gray( IntType n )
 {
 	return (n >> 1) ^ n;
 }
@@ -123,6 +114,12 @@ unsigned ilog2( IntType n )
 	unsigned l;
 	for ( l = 0; n; n >>= 1, ++l );
 	return l;
+}
+
+template <typename IntType>
+inline bool is_pow2( IntType n )
+{
+	return (n > 1) && ((n & (n-1)) == 0);
 }
 
 // ------------------------------------------------------------------------
@@ -159,19 +156,17 @@ void fwht_sequency_permutation( std::vector<IntType>& perm, unsigned order )
  * Fast Walsh-Hadamard transform.
  */
 template <typename T>
-void fwht( std::vector<T>& data, bool sequency_ordered = false )
+void fwht( T *data, unsigned n, bool sequency_ordered = false )
 {
-	unsigned l2 = ilog2(data.size());
-	if ( data.size() == (size_t)(1 << (l2-1)) ) --l2;
-	unsigned p2 = (1 << l2);
-
-	// 0-padding to the next power of 2
-	data.resize(p2,T(0));
+	// Require n to be a power of 2
+	unsigned l2 = ilog2(n) - 1; 
+	if ( n != (unsigned)(1<<l2) ) 
+		throw std::length_error("Data length should be a power of 2.");
 
 	// Compute the WHT
 	for ( unsigned i = 0; i < l2; ++i )
 	{
-		for ( unsigned j = 0; j < p2; j += (1 << (i+1)) )
+		for ( unsigned j = 0; j < n; j += (1 << (i+1)) )
 		for ( unsigned k = 0; k < (unsigned)(1 << i); ++k )
 			rotate( data[j+k], data[j+ k + (unsigned)(1<<i)] );
 	}
@@ -183,11 +178,25 @@ void fwht( std::vector<T>& data, bool sequency_ordered = false )
 		fwht_sequency_permutation( perm, l2 );
 
 		// Copy transform
-		std::vector<T> tmp = data;		
-		for ( unsigned i = 0; i < p2; ++i )
-			data[i] = tmp[perm[i]] / p2;
+		std::vector<T> tmp( data, data+n );
+		for_i(n) data[i] = tmp[perm[i]] / n;
 	}
-	else for ( auto& d: data ) d /= p2;
+	else for_i(n) data[i] /= n;
+}
+
+// ------------------------------------------------------------------------
+
+template <typename T>
+void fwht( std::vector<T>& data, bool sequency_ordered = false )
+{
+	// Round to the next power of 2
+	unsigned  n = data.size();
+	unsigned l2 = ilog2(n) - is_pow2(n);
+	unsigned  N = 1 << l2;
+
+	// 0-padding to the next power of 2
+	data.resize( N, T(0) );
+	fwht( data.data(), N, sequency_ordered );
 }
 
 #endif
