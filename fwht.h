@@ -156,12 +156,17 @@ void fwht_sequency_permutation( std::vector<IntType>& perm, unsigned order )
  * Fast Walsh-Hadamard transform.
  */
 template <typename T>
-void fwht( T *data, unsigned n, bool sequency_ordered = false )
+void fwht( T *data, unsigned n, 
+	bool sequency_ordered = false, 
+	bool normalize = true )
 {
 	// Require n to be a power of 2
 	unsigned l2 = ilog2(n) - 1; 
 	if ( n != (unsigned)(1<<l2) ) 
 		throw std::length_error("Data length should be a power of 2.");
+
+	// Normalizer
+	const unsigned norm = normalize ? n : 1;
 
 	// Compute the WHT
 	for ( unsigned i = 0; i < l2; ++i )
@@ -179,24 +184,19 @@ void fwht( T *data, unsigned n, bool sequency_ordered = false )
 
 		// Copy transform
 		std::vector<T> tmp( data, data+n );
-		for_i(n) data[i] = tmp[perm[i]] / n;
+		for_i(n) data[i] = tmp[perm[i]] / norm;
 	}
-	else for_i(n) data[i] /= n;
+	else if ( normalize )
+		for_i(n) data[i] /= norm;
 }
 
 // ------------------------------------------------------------------------
 
 template <typename T>
-void ifwht( T *data, unsigned n, bool sequency_ordered = false )
+void ifwht( T *data, unsigned n, 
+	bool sequency_ordered = false )
 {
-	// Require n to be a power of 2
-	unsigned l2 = ilog2(n) - 1; 
-	if ( n != (unsigned)(1<<l2) ) 
-		throw std::length_error("Data length should be a power of 2.");
-
-	// Scale data and apply FWHT
-	for ( unsigned i = 0; i < n; ++i ) data[i] *= n;
-	fwht( data, n, sequency_ordered );
+	fwht( data, n, sequency_ordered, false );
 }
 
 // ------------------------------------------------------------------------
