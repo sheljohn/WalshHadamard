@@ -5,7 +5,7 @@
 //================================================
 
 #include "fwht.h"
-#include "mexArray.h"
+#include "ndArray.h"
 #include <algorithm>
 
 #define SEQUENCY_ORDER false
@@ -18,7 +18,7 @@
 
 
 /**
- * Dependency to MexArray (see https://github.com/Sheljohn/MexArray).
+ * Dependency to ndArray (see https://github.com/Sheljohn/ndArray).
  * Use the script start_matlab.sh to start Matlab, and compile with:
  * mex CXXFLAGS="\$CXXFLAGS -std=c++0x -Wall -O2" mx_fwht.cpp
  */
