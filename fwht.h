@@ -187,6 +187,21 @@ void fwht( T *data, unsigned n, bool sequency_ordered = false )
 // ------------------------------------------------------------------------
 
 template <typename T>
+void ifwht( T *data, unsigned n, bool sequency_ordered = false )
+{
+	// Require n to be a power of 2
+	unsigned l2 = ilog2(n) - 1; 
+	if ( n != (unsigned)(1<<l2) ) 
+		throw std::length_error("Data length should be a power of 2.");
+
+	// Scale data and apply FWHT
+	for ( unsigned i = 0; i < n; ++i ) data[i] *= n;
+	fwht( data, n, sequency_ordered );
+}
+
+// ------------------------------------------------------------------------
+
+template <typename T>
 void fwht( std::vector<T>& data, bool sequency_ordered = false )
 {
 	// Round to the next power of 2
@@ -197,6 +212,21 @@ void fwht( std::vector<T>& data, bool sequency_ordered = false )
 	// 0-padding to the next power of 2
 	data.resize( N, T(0) );
 	fwht( data.data(), N, sequency_ordered );
+}
+
+// ------------------------------------------------------------------------
+
+template <typename T>
+void ifwht( std::vector<T>& data, bool sequency_ordered = false )
+{
+	// Round to the next power of 2
+	unsigned  n = data.size();
+	unsigned l2 = ilog2(n) - is_pow2(n);
+	unsigned  N = 1 << l2;
+
+	// 0-padding to the next power of 2
+	data.resize( N, T(0) );
+	ifwht( data.data(), N, sequency_ordered );
 }
 
 #endif
